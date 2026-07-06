@@ -35,4 +35,3 @@ jobs:
           git add jobs.json
           git diff --cached --quiet || git commit -m "Update jobs"
           git push
-          
