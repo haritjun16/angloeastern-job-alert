@@ -1,16 +1,46 @@
-import requests
-from bs4 import BeautifulSoup
 import os
+import requests
 
-url = "https://apply.workable.com/angloeastern/"
+# Target Anglo-Eastern API
+URL = "https://apply.workable.com/api/v3/accounts/angloeastern/jobs"
 
-html = requests.get(url).text
+# Set up the request information Workable now expects
+PAYLOAD = {
+    "query": "",
+    "location": [],
+    "department": [],
+    "workplace_type": [],
+    "expand": []
+}
 
-if "job" in html.lower():
-    requests.post(
-        f"https://api.telegram.org/bot{os.environ['TELEGRAM_BOT_TOKEN']}/sendMessage",
-        data={
-            "chat_id": os.environ["TELEGRAM_CHAT_ID"],
-            "text": "✅ Anglo-Eastern careers page checked successfully."
-        },
-    )
+HEADERS = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+}
+
+print("Checking for new jobs at Anglo-Eastern...")
+
+try:
+    # Send a POST request to the updated Workable backend
+    response = requests.post(URL, json=PAYLOAD, headers=HEADERS)
+    response.raise_for_status()
+    
+    # Process the returned data
+    data = response.json()
+    jobs = data.get("results", [])
+    
+    if not jobs:
+        print("No active job postings found right now.")
+    else:
+        print(f"Found {len(jobs)} active jobs:")
+        for job in jobs:
+            title = job.get("title")
+            shortcode = job.get("shortcode")
+            job_url = f"https://apply.workable.com/angloeastern/j/{shortcode}/"
+            
+            print(f"- {title}")
+            print(f"  Link: {job_url}")
+            
+except Exception as e:
+    print(f"An error occurred while running the script: {e}")
+    raise e
