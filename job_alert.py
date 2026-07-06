@@ -4,13 +4,9 @@ import requests
 # Target Anglo-Eastern API
 URL = "https://apply.workable.com/api/v3/accounts/angloeastern/jobs"
 
-# Set up the request information Workable now expects
+# Bulletproof payload structure to avoid structural 400 bad request rejections
 PAYLOAD = {
-    "query": "",
-    "location": [],
-    "department": [],
-    "workplace_type": [],
-    "expand": []
+    "query": ""
 }
 
 HEADERS = {
